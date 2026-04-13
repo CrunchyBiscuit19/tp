@@ -46,7 +46,7 @@ Given below is a quick overview of main components and how they interact with ea
 
 **Main components of the architecture**
 
-**`Main`** (consisting of classes `Main` and `MainApp`) is in charge of the app launch and shut down.
+**`Main`** (consisting of classes `Main` and `MainApp`) is in charge of the app launch and shutdown.
 
 * At app launch, it initializes the other components in the correct sequence, and connects them up with each other.
 * At shutdown, it shuts down the other components and invokes cleanup methods where necessary.
@@ -135,8 +135,8 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 
 <box type="info" seamless>
 
-**Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X) but due to a limitation of
-PlantUML, the lifeline continues till the end of diagram.
+**Note:** The lifeline for `DeleteCommandParser`, `DeleteCommand` and `CommandResult` should end at the destroy marker
+(X) but due to a limitation of PlantUML, the lifeline continues till the end of diagram.
 </box>
 
 How the `Logic` component works:
@@ -405,6 +405,15 @@ messages follow the same trimming rule as other parser-handled fields.
 | `LogMessage` | 1 to 1000 Unicode code points (`LogMessage#MIN_LENGTH`, `LogMessage#MAX_LENGTH`).                                                            |
 
 This keeps validation centralized and consistent for both command execution and JSON deserialization.
+
+These constraints are not perfect. For example:
+* **Name validation** uses a 1-100 character limit. The minimum prevents blank names, while the maximum accommodates
+real-world names (most are under 50 characters). The limit is measured in Unicode code points to support multi-language
+names.
+* **Phone validation** accepts unrealistic formats like `1 2 2-2` because
+it prioritizes flexibility (supporting international formats and readable spacing) over strictness. Country code support
+remains a planned enhancement. However, these constraints are sufficient for Linkline's target use case, and invalid
+entries can always be corrected later using the `edit` command.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -1038,8 +1047,6 @@ Removing or renaming optional fields such as `notes`, `logs`, or `tags` may stil
 ## **Appendix: Effort**
 This project extends the AddressBook-Level 3 (AB3) codebase into Linkline, a client management system tailored for solo service technicians. While AB3 serves as a simple contact manager, Linkline introduces domain-specific features such as service logs, confirmation flows and corrupted file handling.
 
-<box type="info" seamless>
-
 ### Challenges
 
 | **Challenge** | **Description**                                                                                                                                                               |
@@ -1051,8 +1058,6 @@ This project extends the AddressBook-Level 3 (AB3) codebase into Linkline, a cli
 | **Duplicate detection** | Enhanced `edit` command to prevent duplicate phone/email across different clients while allowing self-edits.                                                                  |
 | **Corrupted file handling** | Added detection and user-friendly error messaging for corrupted `linkline.json` without auto-overwriting.                                                                     |
 | **UI improvements** | Redesigned the interface with a split-pane layout featuring a compact list view (showing name and phone) and a full details panel (showing all client information when selected via `view`).                                                                                                         |
-
-</box>
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -1075,13 +1080,18 @@ Team size: 5
    emails, addresses, and tags, but it cannot search service notes or past log content. We plan to extend `find`
    with fields such as `--notes=...` and `--log=...` so users can locate clients using site instructions or previous
    job records.
-5. **Enhance phone number handling with country codes:** Linkline currently stores a single phone number per client with 
+5. **Enhance phone number handling with country codes**: Linkline currently stores a single phone number per client with 
    limited country code support. We plan to enhance this by allowing optional `+<country_code>` prefixes
    (e.g., `+65 91234567`) and normalizing numbers using `country_code + local_digits` for duplicate detection.
    This ensures `+65 9999 9999` and `9999 9999` are treated as duplicates, while `+66 9999 9999` remains distinct.
    We also plan to support a default country code (e.g., `setcountrycode 65`) so users can enter local numbers without
    typing `+65` every time.
-
-6. **Support multiple phone numbers per client:** Linkline currently stores only one phone number per client. We plan to
+6. **Support multiple phone numbers per client**: Linkline currently stores only one phone number per client. We plan to
    extend phone number storage to support multiple numbers (e.g., mobile, home, office). As an interim workaround, users
    can store secondary numbers in the `notes` field.
+7. **Improve duplicate error messages**: The current duplicate error message does not specify which field caused the
+   duplicate or which client is affected. We plan to enhance it to show the duplicate field (phone or email), the name
+   and index of the existing client, and a suggestion to use `list` if the duplicate is not visible in the current
+   filtered view.
+8. **Repurpose the selection highlight**: The current highlight is a cosmetic leftover with no function. We plan to
+   repurpose it to provide useful feedback (e.g., indicating the most recently viewed client).

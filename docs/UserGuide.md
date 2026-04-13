@@ -156,8 +156,8 @@ add --name=NAME --phone=PHONE_NUMBER --email=EMAIL --address=ADDRESS [--notes=NO
 
 * `--name=`, `--phone=`, `--email=`, and `--address=` are required.
 * `--tag=` can be repeated. Other named fields can appear at most once.
-* Linkline rejects duplicates. Two clients are considered duplicates if they share the same email address (
-  case-insensitive) or the same phone number after ignoring spaces and hyphens.
+* Linkline rejects duplicates. Two clients are considered duplicates if they share the same email address
+(case-insensitive) or the same phone number after ignoring spaces and hyphens.
 * After a successful `add`, Linkline shows the full client list again.
 
 <box type="tip" seamless>
@@ -199,9 +199,17 @@ edit INDEX [--name=NAME] [--phone=PHONE_NUMBER] [--email=EMAIL] [--address=ADDRE
 * Any field you provide replaces the client's current value for that field.
 * Editing tags is not cumulative. If you provide `--tag=`, Linkline replaces the client's entire tag list with the tags
   you supplied.
-* Use `--tag=` with no value to clear all tags.
+* Use `--tag=` with no value to clear all tags. In this case, it cannot be combined with other `--tag=` fields in the
+  same command.
 * Use `--notes=` with no value to clear notes.
 * Linkline rejects edits that would make the client duplicate another existing client.
+
+<box type="tip" seamless>
+
+**Note on editing clients on filtered lists:** If you edit a client while viewing a filtered list (e.g., after using
+`find` or `filtertag`), the client may disappear from the displayed client list and details panel if the edited details
+no longer match the current filter criteria. Use `list` to see all clients again.
+</box>
 
 Examples:
 
@@ -227,6 +235,13 @@ delete INDEX
 * Any other command, including an invalid command, provided after the first `delete` command cancels the pending
   deletion.
 
+<box type="tip" seamless>
+
+**Tip:** After the first `delete 1`, commands such as `delete 1` and `delete 01` both confirm the deletion because
+Linkline compares the parsed index value. Leading/trailing spaces and spaces between the command word and index are
+ignored. Numbers with leading zeros (e.g., '01', '001') also confirm the deletion.
+</box>
+
 Examples:
 
 * `delete 1` followed by `find --name=Bernice`
@@ -235,17 +250,10 @@ Examples:
   * Shows confirmation message for deleting the client at index 1.
   * If you enter `delete 1` again, the client at index 1 is deleted.
 
-Example result after a `delete` command (with confirmation):
+Example result of `delete` command with confirmation (first attempt and confirmed deletion):
 ![pending delete command result](images/pendingDeleteCommandResult.png)
 
 ![confirmed delete command result](images/confirmedDeleteCommandResult.png)
-
-<box type="tip" seamless>
-
-**Tip:** After the first `delete 1`, commands such as `delete 1` and `delete 01` both confirm the deletion because
-Linkline compares the parsed index value. Leading/trailing spaces and spaces between the command word and index are
-ignored. Numbers with leading zeros (e.g., '01', '001') also confirm the deletion.
-</box>
 
 ### Clearing all entries: `clear`
 
@@ -263,7 +271,7 @@ clear
     * The second `clear` clears all entries.
 * Any other command, including an invalid command, provided after the first `clear` command cancels the pending action.
 
-Example result after a `clear` command with a successful confirmation:
+Example result after confirming `clear`:
 ![clear command result](images/clearCommandResult.png)
 
 ### Listing all clients: `list`
@@ -317,7 +325,7 @@ Searches the currently displayed client list for clients whose name, phone numbe
 matches at least one supplied query. Uses `OR` matching across all supplied queries and fields.
 
 `find` will only search based on the clients currently in the displayed client list. \
-Both `find` and `filtertag` commands can be used to narrow down the current list. \
+Both `find` and `filtertag` commands can be used to narrow down the current list.
 
 Use `list` when you want to search from the full client list again.
 
@@ -414,10 +422,10 @@ Examples:
 
 <box type="warning" seamless>
 
-**Warning:** The `copyaddr` command copies the address based on the current displayed index. The copied address may
+**Warning:** The `copyaddr` command copies the address based on the current **displayed index**. The copied address may
 become outdated if:
 
-- The client list changes (e.g., via `list` or `find`), causing the index to point to a different client.
+- The client list changes (e.g., using `list` or `find`), causing the index to point to a different client.
 - The client's address is edited after copying.
   </box>
 
@@ -438,6 +446,7 @@ copyedit INDEX
 * If the client has notes, the copied command also includes `--notes=...`.
 * This is useful when you want to change a field with long or multiple values (e.g., tags, notes, ...) without retyping
   the rest.
+* If Linkline cannot access the clipboard, it shows an error instead of copying anything.
 
 Examples:
 
@@ -515,7 +524,7 @@ Examples:
     * Shows confirmation message for deleting log `1` of client `3`.
     * If you enter `logdelete 3 1` again, the corresponding log is deleted.
 
-Example result after a `logdelete` command:
+Example result after confirming `logdelete`:
 ![confirmed logdelete command result](images/logdeleteCommandResult.png)
 
 ### Renaming a tag: `renametag`
@@ -568,7 +577,7 @@ Examples:
     * Shows confirmation message for deleting tag `ac-repair`.
     * If you enter `deletetag ac-repair` again, the tag `ac-repair` is deleted.
 
-Example result after a `deletetag` command:
+Example result after confirming `deletetag`:
 ![confirmed deletetag command result](images/deletetagCommandResult.png)
 
 ### Exiting Linkline: `exit`
