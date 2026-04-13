@@ -1084,3 +1084,7 @@ Team size: 5
 6. **Support multiple phone numbers per client:** Linkline currently stores only one phone number per client. We plan to
    extend phone number storage to support multiple numbers (e.g., mobile, home, office). As an interim workaround, users
    can store secondary numbers in the `notes` field.
+7. **Improve adaptive sizing for the Notes and Logs sections:** Linkline currently keeps the client detail panel usable
+   through wrapping and scrolling, but longer `notes` and `logs` content can still require more internal scrolling than
+   necessary on larger windows. We plan to let these sections use available vertical space more effectively as the app
+   window grows, while preserving usability and access to the full content on smaller windows.
