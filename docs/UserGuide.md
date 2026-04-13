@@ -127,7 +127,7 @@ The following constraints apply whenever these field values are entered in comma
 
 **Tip:** Linkline keeps the displayed client list sorted by name, then by phone number (by numeric digits only – spaces
 and hyphens are ignored). Whenever a command changes which clients are shown, whether by modifying data, resetting the
-list, or narrowing it, the displayed list remains sorted in that order.
+list, or narrowing it, the displayed client list remains sorted in that order.
 </box>
 
 ### Viewing help: `help`
@@ -156,8 +156,8 @@ add --name=NAME --phone=PHONE_NUMBER --email=EMAIL --address=ADDRESS [--notes=NO
 
 * `--name=`, `--phone=`, `--email=`, and `--address=` are required.
 * `--tag=` can be repeated. Other named fields can appear at most once.
-* Linkline rejects duplicates. Two clients are considered duplicates if they share the same email address (
-  case-insensitive) or the same phone number after ignoring spaces and hyphens.
+* Linkline rejects duplicates. Two clients are considered duplicates if they share the same email address
+(case-insensitive) or the same phone number after ignoring spaces and hyphens.
 * After a successful `add`, Linkline shows the full client list again.
 
 <box type="tip" seamless>
@@ -199,9 +199,17 @@ edit INDEX [--name=NAME] [--phone=PHONE_NUMBER] [--email=EMAIL] [--address=ADDRE
 * Any field you provide replaces the client's current value for that field.
 * Editing tags is not cumulative. If you provide `--tag=`, Linkline replaces the client's entire tag list with the tags
   you supplied.
-* Use `--tag=` with no value to clear all tags.
+* Use `--tag=` with no value to clear all tags. In this case, it cannot be combined with other `--tag=` fields in the
+  same command.
 * Use `--notes=` with no value to clear notes.
 * Linkline rejects edits that would make the client duplicate another existing client.
+
+<box type="tip" seamless>
+
+**Note on editing clients on filtered lists:** If you edit a client while viewing a filtered list (e.g., after using
+`find` or `filtertag`), the client may disappear from the displayed client list and details panel if the edited details
+no longer match the current filter criteria. Use `list` to see all clients again.
+</box>
 
 Examples:
 
@@ -227,6 +235,13 @@ delete INDEX
 * Any other command, including an invalid command, provided after the first `delete` command cancels the pending
   deletion.
 
+<box type="tip" seamless>
+
+**Tip:** After the first `delete 1`, commands such as `delete 1` and `delete 01` both confirm the deletion because
+Linkline compares the parsed index value. Leading/trailing spaces and spaces between the command word and index are
+ignored. Numbers with leading zeros (e.g., '01', '001') also confirm the deletion.
+</box>
+
 Examples:
 
 * `delete 1` followed by `find --name=Bernice`
@@ -235,17 +250,10 @@ Examples:
   * Shows confirmation message for deleting the client at index 1.
   * If you enter `delete 1` again, the client at index 1 is deleted.
 
-Example result after a `delete` command (with confirmation):
+Example result of `delete` command with confirmation (first attempt and confirmed deletion):
 ![pending delete command result](images/pendingDeleteCommandResult.png)
 
 ![confirmed delete command result](images/confirmedDeleteCommandResult.png)
-
-<box type="tip" seamless>
-
-**Tip:** After the first `delete 1`, commands such as `delete 1` and `delete 01` both confirm the deletion because
-Linkline compares the parsed index value. Leading/trailing spaces and spaces between the command word and index are
-ignored. Numbers with leading zeros (e.g., '01', '001') also confirm the deletion.
-</box>
 
 ### Clearing all entries: `clear`
 
@@ -263,7 +271,7 @@ clear
     * The second `clear` clears all entries.
 * Any other command, including an invalid command, provided after the first `clear` command cancels the pending action.
 
-Example result after a `clear` command with a successful confirmation:
+Example result after confirming `clear`:
 ![clear command result](images/clearCommandResult.png)
 
 ### Listing all clients: `list`
@@ -313,11 +321,11 @@ Examples:
 
 ### Finding clients by details: `find`
 
-Searches the currently displayed list for clients whose name, phone number, email address, physical address, or tag
+Searches the currently displayed client list for clients whose name, phone number, email address, physical address, or tag
 matches at least one supplied query. Uses `OR` matching across all supplied queries and fields.
 
-`find` will only search based on the clients currently in the displayed list. \
-Both `find` and `filtertag` commands can be used to narrow down the current list. \
+`find` will only search based on the clients currently in the displayed client list. \
+Both `find` and `filtertag` commands can be used to narrow down the current list.
 
 Use `list` when you want to search from the full client list again.
 
@@ -358,10 +366,10 @@ Example result after a `find` command:
 
 ### Filtering clients by tag: `filtertag`
 
-Shows only clients in the currently displayed list whose tags satisfy the supplied tag filter. uses `AND` matching
+Shows only clients in the currently displayed client list whose tags satisfy the supplied tag filter. uses `AND` matching
 across all supplied queries and fields
 
-`filtertag` will only search based on the clients currently in the displayed list. \
+`filtertag` will only search based on the clients currently in the displayed client list. \
 Both `find` and `filtertag` commands can be used to narrow down the current list.
 
 Use `list` when you want to search from the full client list again.
@@ -414,10 +422,10 @@ Examples:
 
 <box type="warning" seamless>
 
-**Warning:** The `copyaddr` command copies the address based on the current displayed index. The copied address may
+**Warning:** The `copyaddr` command copies the address based on the current **displayed index**. The copied address may
 become outdated if:
 
-- The client list changes (e.g., via `list` or `find`), causing the index to point to a different client.
+- The client list changes (e.g., using `list` or `find`), causing the index to point to a different client.
 - The client's address is edited after copying.
   </box>
 
@@ -438,6 +446,7 @@ copyedit INDEX
 * If the client has notes, the copied command also includes `--notes=...`.
 * This is useful when you want to change a field with long or multiple values (e.g., tags, notes, ...) without retyping
   the rest.
+* If Linkline cannot access the clipboard, it shows an error instead of copying anything.
 
 Examples:
 
@@ -454,8 +463,8 @@ the field you want, and then press Enter.
 
 **Warning:** The `copyedit` command copies the current **displayed index**, not the client's identity.
 
-- If you change the displayed list (e.g., using `list` or `find`) before running the pasted command, the index in the
-  copied command may now refer to a different client.
+- If you change the displayed client list (e.g., using `list` or `find`) before running the pasted command, the index
+  in the copied command may now refer to a different client.
 - If the client's details (e.g., name, phone, email) have been edited since copying, the copied command may contain
   outdated information.
 </box>
@@ -515,7 +524,7 @@ Examples:
     * Shows confirmation message for deleting log `1` of client `3`.
     * If you enter `logdelete 3 1` again, the corresponding log is deleted.
 
-Example result after a `logdelete` command:
+Example result after confirming `logdelete`:
 ![confirmed logdelete command result](images/logdeleteCommandResult.png)
 
 ### Renaming a tag: `renametag`
@@ -568,7 +577,7 @@ Examples:
     * Shows confirmation message for deleting tag `ac-repair`.
     * If you enter `deletetag ac-repair` again, the tag `ac-repair` is deleted.
 
-Example result after a `deletetag` command:
+Example result after confirming `deletetag`:
 ![confirmed deletetag command result](images/deletetagCommandResult.png)
 
 ### Exiting Linkline: `exit`
@@ -629,8 +638,17 @@ previous Linkline home folder.
 
 ## Known issues
 
-1. **When using multiple screens**, if you move the application to a secondary screen and later switch to using only the primary screen, the GUI may open off-screen. Delete `preferences.json` before starting Linkline again.
-2. **If you minimize the Help Window** and then run `help` again, the original Help Window remains minimized and no new Help Window appears. Restore the minimized Help Window manually.
+1. **When using multiple screens**, if you move the application to a secondary screen and later switch to using only the
+   primary screen, the GUI may open off-screen. Delete `preferences.json` before starting Linkline again.
+2. **If you minimize the Help Window** and then run `help` again, the original Help Window remains minimized and no new
+   Help Window appears. Restore the minimized Help Window manually.
+3. **Selection highlight is cosmetic and has no function**. The highlight is a remnant of the original AB3 codebase and
+   does not control the details panel. The details panel updates based on commands like `view`, `add`, `edit`, `delete`,
+   etc. Clicking on the displayed client list has no effect. The highlight may shift unexpectedly after commands like
+   `edit`, `add`, or `list`, but this is harmless and does not affect functionality. For example, after editing a client
+   out of a filtered list, the highlight may move to another client, but this does not mean the highlighted client
+   should now be shown in the details panel. Future versions may remove or repurpose this highlight.
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## Command summary
