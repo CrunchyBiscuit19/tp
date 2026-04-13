@@ -540,7 +540,7 @@ renametag --tag=OLD_TAG --tag=NEW_TAG
 * Provide exactly two `--tag=` fields, in this order: `OLD_TAG`, then `NEW_TAG`.
 * The `OLD_TAG` must already exist in Linkline.
 * The `NEW_TAG` must be valid and must not already exist.
-* Tag names are case-insensitive.<br>
+* Tag names are case-insensitive and capitalisation cannot be changed with `renametag`.<br>
   Example: `PLUMBING` and `plumbing` are treated as the same tag.
 * After a successful rename, Linkline shows the full client list again.
 

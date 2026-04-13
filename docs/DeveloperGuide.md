@@ -1108,3 +1108,9 @@ Team size: 5
    through wrapping and scrolling, but longer `notes` and `logs` content can still require more internal scrolling than
    necessary on larger windows. We plan to let these sections use available vertical space more effectively as the app
    window grows, while preserving usability and access to the full content on smaller windows.
+11. **Allow `filtertag` to change the capitalisation of tags:** Currently, `Tags` are case-insensitive for duplicate
+   detection and identity, but Linkline lacks a way to globally update the capitalisation of a tag once it has been
+   created. For example, if a tag is created as `plumbing`, it cannot currently be renamed to `Plumbing` without
+   deleting and recreating it across all affected clients. We plan to enhance the `renametag` command to support
+   capitalisation-only updates. This will allow users to refine the visual presentation of their tag list globally
+   across the entire database without affecting the identity logic.
