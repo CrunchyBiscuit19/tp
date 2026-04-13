@@ -639,8 +639,6 @@ previous Linkline home folder.
    `edit`, `add`, or `list`, but this is harmless and does not affect functionality. For example, after editing a client
    out of a filtered list, the highlight may move to another client, but this does not mean the highlighted client
    should now be shown in the details panel. Future versions may remove or repurpose this highlight.
-4.  **Displayed client list does not wrap text to maintain UI layout**. Long names or phone numbers are truncated with
-   `...` to keep the list compact and readable. Use `view INDEX` to see the full details of any client.
 
 --------------------------------------------------------------------------------------------------------------------
 
